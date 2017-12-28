@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+ <!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	
+	<constant name="struts.devMode" value="true"></constant>
+	<constant name="struts.ognl.allowStaticMethodAccess" value="true"></constant>
+	
+	
+	<package name="crm" namespace="/" extends="struts-default">
+	
+		<interceptors>
+				<interceptor name="LoginInterceptor" class="cn.itcast.interceptor.LoginInterceptor"></interceptor>
+				<!-- 注册拦截器栈 -->
+				<interceptor-stack name="myStack">
+					<!-- 自定义拦截页面 -->
+					<interceptor-ref name="LoginInterceptor">
+						<param name="excludeMethods">login</param>
+					</interceptor-ref>
+					<!-- 默认拦截页面 -->
+					<interceptor-ref name="defaultStack"></interceptor-ref>
+				</interceptor-stack>
+		</interceptors>
+	
+		<!-- 指定包中的默认的拦截器栈 -->
+		<default-interceptor-ref name="myStack"></default-interceptor-ref>
+		
+		
+		<!-- 定义全局结果集 -->
+		<global-results>
+			<result name="toLogin" type="redirect">/login.jsp</result>
+		</global-results>
+		
+		<!-- 全局错误页面配置 -->
+		<global-exception-mappings>
+			  <!-- 如果出现runtimeexception异常,就将跳转到名为error的结果 -->
+			  	<exception-mapping result="error" exception="java.lang.RuntimeException"></exception-mapping>
+		</global-exception-mappings>
+		
+		<action name="customer_*" class="cn.itcast.action.CustomerAction" method="{1}">
+				<result name="toList">/jsp/customer/list.jsp</result>
+				<result name="toAdd" type="redirectAction">
+					<param name="actionName">customer_list</param>
+					<param name="namespace">/</param>
+				</result>
+		</action>
+		
+		<action name="user_*" class="cn.itcast.action.UserAction" method="{1}">
+			<result name="toHome" type="redirect">/index.jsp</result>
+			<result name="error">/jsp/error.jsp</result>
+		</action>
+		
+	</package>
+	
+	
+	
+	<!--  <package name="customer" namespace="/customer" extends="struts-default">
+	 	<action name="customer_list" class="cn.itcast.action.CustomerAction" method="list">
+	 		<result name="success">/jsp/customer/list.jsp</result>
+	 	</action>
+	 	
+	 	<action name="customer_add" class="cn.itcast.action.CustomerAction" method="add">
+	 		<result name="success" type="redirectAction">customer_list</result>
+	 	</action>
+	 </package>
+	  <package name="user" namespace="/" extends="struts-default">
+	  <global-exception-mappings >
+	  如果出现runtimeexception异常,就将跳转到名为error的结果
+	  	<exception-mapping result="error" exception="java.lang.RuntimeException"></exception-mapping>
+	  </global-exception-mappings>
+	  
+	 	<action name="user_login" class="cn.itcast.action.UserAction" method="login">
+	 		<result name="toHome" type="redirect">/index.jsp</result>
+	 		<result name="error">/jsp/error.jsp</result>
+	 	</action>
+	  </package> -->
+	 
+	 
+</struts>

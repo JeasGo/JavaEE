@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>运单快速录入</title>
+		<!-- 导入jquery核心类库 -->
+		<script type="text/javascript" src="../../js/jquery-1.8.3.js"></script>
+		<!-- 导入easyui类库 -->
+		<link rel="stylesheet" type="text/css" href="../../js/easyui/themes/default/easyui.css">
+		<link rel="stylesheet" type="text/css" href="../../js/easyui/themes/icon.css">
+		<link rel="stylesheet" type="text/css" href="../../js/easyui/ext/portal.css">
+		<link rel="stylesheet" type="text/css" href="../../css/default.css">
+		<script type="text/javascript" src="../../js/easyui/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../js/easyui/ext/jquery.portal.js"></script>
+		<script type="text/javascript" src="../../js/easyui/ext/jquery.cookie.js"></script>
+		<script src="../../js/easyui/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			//全局的正在编辑的索引
+			var editIndex ;
+			
+			//新增一行
+			function doAdd(){
+				//如果有正在编辑的行
+				if(editIndex != undefined){
+					//结束编辑
+					//隐含的一个动作：form表单组件的自动校验，如果校验不通过，则不会结束编辑。
+					//如果结束编辑，就会调用事件
+					$("#grid").datagrid('endEdit',editIndex);
+				}
+				
+				//正在编辑的索引未定义的
+				if(editIndex==undefined){
+					//alert("快速添加电子单...");
+					$("#grid").datagrid('insertRow',{
+						index : 0,//永远在第一行插入一行
+						row : {}//行数据
+						//row : {"product":"苹果"}
+					});
+					//打开编辑
+					$("#grid").datagrid('beginEdit',0);
+					//正在编辑的索引是0
+					editIndex = 0;
+				}
+			}
+			
+			function doSave(){
+				$("#grid").datagrid('endEdit',editIndex );
+			}
+			
+			function doCancel(){
+				if(editIndex!=undefined){
+					$("#grid").datagrid('cancelEdit',editIndex);
+					//为了判断是否是正在修改的（因为正在修改的话，有id）
+					//如果没有id，则说明是新增的，要取消编辑，则删掉改行。
+					if($('#grid').datagrid('getRows')[editIndex].id == undefined){
+						$("#grid").datagrid('deleteRow',editIndex);
+					} 
+					editIndex = undefined;
+				}
+			}
+			
+			//工具栏
+			var toolbar = [ {
+				id : 'button-add',	
+				text : '新增一行',
+				iconCls : 'icon-edit',
+				handler : doAdd
+			}, {
+				id : 'button-cancel',
+				text : '取消编辑',
+				iconCls : 'icon-cancel',
+				handler : doCancel
+			}, {
+				id : 'button-save',
+				text : '保存',
+				iconCls : 'icon-save',
+				handler : doSave
+			}];
+			// 定义列
+			var columns = [ [ {
+				field : 'wayBillNum',
+				title : '运单编号',
+				width : 120,
+				align : 'center',
+				editor :{
+					type : 'validatebox',
+					options : {
+						required: true
+					}
+				}
+			}, {
+				field : 'arriveCity',
+				title : '到达地',
+				width : 120,
+				align : 'center',
+				editor :{
+					type : 'validatebox',
+					options : {
+						required: true
+					}
+				}
+			},{
+				field : 'goodsType',
+				title : '托寄物类型',
+				width : 120,
+				align : 'center',
+				editor :{
+					type : 'validatebox',
+					options : {
+						required: true
+					}
+				}
+			}, {
+				field : 'num',
+				title : '件数',
+				width : 120,
+				align : 'center',
+				editor :{
+					type : 'numberbox',
+					options : {
+						required: true
+					}
+				}
+			}, {
+				field : 'weight',
+				title : '重量',
+				width : 120,
+				align : 'center',
+				editor :{
+					type : 'validatebox',
+					options : {
+						required: true
+					}
+				}
+			}, {
+				field : 'floadreqr',
+				title : '配载要求',
+				width : 220,
+				align : 'center',
+				editor :{
+					type : 'validatebox',
+					options : {
+						required: true
+					}
+				}
+			}] ];
+			
+			$(function(){
+				// 先将body隐藏，再显示，不会出现页面刷新效果
+				$("body").css({visibility:"visible"});
+				
+				// 运单数据表格
+				$('#grid').datagrid( {
+					iconCls : 'icon-forward',
+					fit : true,
+					border : true,
+					rownumbers : true,
+					striped : true,
+					pageList: [30,50,100],
+					pagination : true,
+					toolbar : toolbar,
+					//请求地址
+					url :  "../../wayBill_listPage.action",
+					idField : 'id',
+					columns : columns,
+					onDblClickRow : doDblClickRow,
+					//结束编辑后的事件
+					onAfterEdit : function(rowIndex, rowData, changes){
+						console.info(rowData);
+						
+						//目标：将数据保存到数据库(异步)
+						$.post("../../wayBill_add.action",rowData,function(data){
+							if(data.result){
+								//保存成功
+								$.messager.show({  	
+								  title:'恭喜',  	
+								  msg:'保存运单成功！',  	
+								  timeout:2000 	
+								});  
+
+							}else{
+								//保存失败
+								$.messager.alert("失败","保存运单失败！","error");
+							}
+							
+							
+							//重新刷新列表（让页面呈现真实数据）
+							$("#grid").datagrid("reload");
+						});
+						
+						
+						//将正在编辑的行的索引置为undefined
+						editIndex = undefined;
+					}
+				});
+			});
+		
+			//双击修改
+			function doDblClickRow(rowIndex, rowData){
+				//alert("双击表格数据...");
+				console.info(rowIndex);
+				$('#grid').datagrid('beginEdit',rowIndex);
+				editIndex = rowIndex;
+			}
+			
+			//搜索
+			//value是输入关键字的值
+			//name：是选中菜单的name的值
+			function doSearch(value,name){
+				//alert(value+"--"+name);
+				
+				//重新查询数据
+				$("#grid").datagrid("load",{
+					//自定义两个属性，分别存放关键字和菜单名字
+					"fieldName":name,
+					"fieldValue":value
+				});
+			}
+			
+		</script>
+	</head>
+
+	<body class="easyui-layout" style="visibility:hidden;">
+		<div region="north">
+			<input class="easyui-searchbox" data-options="searcher:doSearch,prompt:'请输入查询的关键字',menu:'#mm'"/>
+			<div id="mm">
+				<div name="arriveCity" data-options="iconCls:'icon-tip'">到达地</div>
+				<div name="goodsType">托寄物类型</div>
+			</div>
+		</div>
+		<div region="center" border="false">
+			<table id="grid"></table>
+		</div>
+	</body>
+
+</html> 

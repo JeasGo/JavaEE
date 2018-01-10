@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>Insert title here</title>
+<script type="text/javascript" src="./js/jquery.js"></script>
+
+
+<!-- 目标：跨域获取数据 -->
+<script type="text/javascript">
+
+	function getData(mydata){
+		console.log(mydata)
+	}
+	//onload
+	$(function(){
+		
+		$(":button").on("click",function(){
+			 $.get("http://www.aa.cn:9001/bos_management/easyuidemo/datagrid_data.json",function(data){
+				console.log(data);
+			}); 
+			
+		});
+		
+		
+		
+	});
+
+</script>
+<script type="text/javascript" src="http://www.aa.cn:9001/bos_management/easyuidemo/jsonp.js?callback=getData"></script>
+
+</head>
+<body>
+
+<button>aa</button>
+<img alt="" src="">
+<iframe src="http://www.baidu.com"></iframe>
+
+</body>
+</html>

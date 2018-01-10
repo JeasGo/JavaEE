@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<!--引入angularjs-->
+		<script src="../js/angular.min.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div ng-app="myApp" ng-controller="myCtrl">
+			<table border="1">
+				<tr>
+					<th>序号</th>
+					<th>商品编号</th>
+					<th>商品名称</th>
+					<th>商品价格</th>
+				</tr>
+				<!--product每次遍历的对象的引用，单词随便-->
+				<tr ng-repeat="product in products">
+					<td>{{$index+1}}</td>
+					<td>{{product.id}}</td>
+					<td>{{product.name}}</td>
+					<td>{{product.price}}</td>
+				</tr>
+			</table>
+			
+		</div>
+		
+		<!--
+        	作者：offline
+        	时间：2017-10-23
+        	描述：控制器 js
+        -->
+		<script type="text/javascript">
+			 var myApp=angular.module("myApp",[]);
+			 myApp.controller("myCtrl",["$scope",function($scope) {
+			 	//初始化赋值
+			 	$scope.products=[
+			 		{"id":"101","name":"苹果X","price":9999},
+			 		{"id":"102","name":"华为m10","price":4000}
+			 	];
+			 	
+			 }]);
+			 
+			 
+		</script>
+		
+	</body>
+</html>

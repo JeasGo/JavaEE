@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<!--引入angularjs-->
+		<script src="../js/angular.min.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div ng-app="">
+			<input type="text" ng-model="username"/>
+			<input type="text" ng-model="username"/>
+			<div>Hello {{username}}</div>
+			<div>Hello <span ng-bind="username"></span></div>
+			
+		</div>
+	</body>
+</html>

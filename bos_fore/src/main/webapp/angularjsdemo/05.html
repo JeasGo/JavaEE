@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<!--引入angularjs-->
+		<script src="../js/angular.min.js" type="text/javascript" charset="utf-8"></script>
+		<!--引入路由模块-->
+		<script src="../js/angular-route.min.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body  ng-app="myApp">
+		<div>
+			菜单
+			<a href="#/">首页</a>
+			<a href="#/computers">电脑管理</a>
+			<a href="#/moneys">财务管理</a>
+			<hr />
+		</div>
+		
+		<!--ng-view是专门是路由内容的展示用的-->
+		<div ng-view></div>
+		
+		
+		<div><hr/>
+			页脚</div>
+			
+		<script type="text/javascript">
+		//注入路由对象
+			var myApp=angular.module("myApp",["ngRoute"])
+			//模块配置（一般用来初始化模块相关东西）
+			.config(["$routeProvider",function ($routeProvider) {
+				 $routeProvider
+				 //template：路由显示位置要显示的内容，支持html
+                .when('/',{template:'这是首页页面'})
+//              .when('/computers',{template:'这是电脑分类页面'})
+                .when('/computers',{templateUrl:'05-computer.html'})
+                .when('/moneys',{template:'这是财务管理页面'})
+                .otherwise({redirectTo:'/'});
+			}]);
+		</script>
+		
+	</body>
+</html>

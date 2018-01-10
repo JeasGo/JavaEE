@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd">
+ 	
+<!-- 第一步：配置JobDetail -->
+	<bean id="userJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<!-- 注入job的类型 -->
+		<property name="jobClass" value="cn.itcast.bos.quartz.job.UserJob" />
+	</bean>
+	<!-- 第二步：配置trigger :简单任务-->
+	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<!-- 注入 JobDetail任务-->
+		<property name="jobDetail" ref="userJobDetail"/>
+		<!-- 计划表达式 -->
+		<!-- <property name="cronExpression" value="0 0 0 * * ?"/> -->
+		<property name="cronExpression" value="0/3 * * * * ?"/>
+	</bean>
+	
+	<!-- 第三步：配置Scheduler -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<!-- 注入job创建工厂 -->
+		<property name="jobFactory" ref="jobFactory"></property>
+		<property name="triggers">
+			<list>
+				<!-- 注入trigger -->
+				<ref bean="cronTrigger" />
+			</list>
+		</property>
+	</bean>
+ 	
+</beans>

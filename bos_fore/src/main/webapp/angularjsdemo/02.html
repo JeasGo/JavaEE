@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<!--引入angularjs-->
+		<script src="../js/angular.min.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<!--<div ng-app="" ng-init="username='Rose'">-->
+		<div ng-app="myApp" ng-controller="myCtrl">
+			<input type="text" ng-model="username"/>
+			<div>Hello {{username}}</div>
+			<div>Hello <span ng-bind="username"></span></div>
+		</div>
+		
+		<!--
+        	作者：offline
+        	时间：2017-10-23
+        	描述：控制器 js
+        -->
+		<script type="text/javascript">
+			//类似于java中：静态方法调用angular.getModule("myApp");
+			//[]初始化的时候，要注入的扩展模块，如果为空，则只有核心模块
+			//myApp变量就代表整个当前angularjs模块对象
+			 var myApp=angular.module("myApp",[]);
+			 //初始化控制器
+			 //[]js赋值注入给myCtrl管理
+			 //function($scope)，angularjs会默认根据参数名字去注入对象
+			 //"$scope":相当于java中声明private $scope;
+			 /*myApp.controller("myCtrl",["$scope",function($scope) {
+			 	//初始化angularjs的变量
+			 	//jack数据是m
+			 	//$scope.username:vm
+			 	$scope.username="Jack";
+			 }]);*/
+			  myApp.controller("myCtrl",function($scope) {
+			 	//初始化angularjs的变量
+			 	//jack数据是m
+			 	//$scope.username:vm
+			 	$scope.username="Jack";
+			 });
+			 
+		</script>
+		
+	</body>
+</html>

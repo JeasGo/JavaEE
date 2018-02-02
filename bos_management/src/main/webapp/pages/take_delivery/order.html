@@ -15,37 +15,26 @@
 		<script type="text/javascript" src="../../js/easyui/ext/jquery.cookie.js"></script>
 		<script src="../../js/easyui/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
 		<!-- 省市区数据js -->
-		<script type="text/javascript" src="../../js/city-picker/js/city-picker.data.js"></script>
+		<script type="text/javascript" src="../../js/city-picker.data.js"></script>
 		<!-- citypicker核心js -->
-		<script type="text/javascript" src="../../js/city-picker/js/city-picker.js"></script>
+		<script type="text/javascript" src="../../js/city-picker.js"></script>
 		<!-- citypicker样式 -->
-		<link rel="stylesheet" type="text/css" href="../../js/city-picker/css/city-picker.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/city-picker.css" />
+		<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.3&key=45d61386adcca8cac1f52611a5a72e26"></script>
 		<script type="text/javascript">
 			$(function(){
 				$("body").css({visibility:"visible"});
 				
 				// 对save按钮条件 点击事件
 				$('#save').click(function(){
-					//手动校验省市区是否选择了
-					var sendAreaInfo=$("input[name='sendAreaInfo']").val();//省/市/区
-					var recAreaInfo=$("input[name='recAreaInfo']").val();
-					//判断
-					if(sendAreaInfo==""){
-						$.messager.alert("提示","寄件人的省市区必须选择！","info");
-						return;
-					}
-					//判断
-					if(recAreaInfo==""){
-						$.messager.alert("提示","收件人的省市区必须选择！","info");
-						return;
-					}
-					
 					// 对form 进行校验
 					if($('#orderForm').form('validate')){
 						$('#orderForm').submit();
 					}
 				});
 			});
+			
+			
 		</script>
 	</head>
 
@@ -65,7 +54,7 @@
 					<tr>
 						<td style="width: 300px;">来电号码:</td>
 						<td>
-							<input type="text" class="easyui-validatebox" name="mobilePhone" required="true" />
+							<input type="text" class="easyui-validatebox" name="telephone" required="true" />
 						</td>
 						<td>客户编号:</td>
 						<td>
@@ -94,19 +83,19 @@
 					<tr>
 						<td>寄件公司:</td>
 						<td>
-							<input type="text" class="easyui-validatebox" name="sendCompany" required="true" />
+							<input type="text"  class="easyui-validatebox" name="sendCompany" required="true" />
 						</td>
 						<td>省市区:</td>
-						<td>
-							<div style="position:relative;">
-								<input type="text" readonly data-toggle="city-picker" size="50" class="easyui-validatebox" name="sendAreaInfo" required="true" />
+						<td><div style="position:relative;">
+								<input type="text" readonly data-toggle="city-picker" class="easyui-validatebox" name="sendAreaInfo" required="true"/>
 							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>详细地址:</td>
 						<td colspan="3">
-							<input type="text" class="easyui-validatebox" name="sendAddress" required="true" size="60"/>
+							<input type="text" id="sendAddress" class="easyui-validatebox" name="sendAddress" required="true" size="60"/>
+							<div id="searchTesultPanel" style=""></div>
 						</td>
 					</tr>
 					<tr class="title">
@@ -128,9 +117,8 @@
 							<input type="text" class="easyui-validatebox" name="recCompany" required="true" />
 						</td>
 						<td>省市区:</td>
-						<td>
-							<div style="position:relative;">
-								<input type="text" readonly data-toggle="city-picker" size="50" class="easyui-validatebox" name="recAreaInfo" required="true" />
+						<td><div  style="position:relative;">
+								<input type="text"  readonly data-toggle="city-picker" class="easyui-validatebox" name="recAreaInfo" required="true" />
 							</div>
 						</td>
 					</tr>

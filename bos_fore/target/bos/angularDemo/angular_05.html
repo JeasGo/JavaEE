@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	
+	<script src="../js/angular.min.js"></script>	
+	<script src="../js/angular-route.min.js"></script>
+	<body>
+		<div ng-app="myApp">
+			<div>===========我是头<br />
+				<a href="#/">首页</a>
+				<a href="#/computer">电脑分类</a>
+				<a href="#/money">财务管理</a>
+			</div>
+			<!--路由中的包含的页面的显示，只能有一个元素-->
+			<div ng-view></div>
+			
+			<div>==========我是脚</div>
+			
+		</div>
+	
+	
+		<!--控制器-->
+		<script type="text/javascript">
+			angular.module("myApp",['ngRoute'])
+			//angularjs的配置，在配置中配置路由内容
+			.config(['$routeProvider', function($routeProvider){
+			    $routeProvider
+			    	//template中支持html标签
+			        .when('/',{template:'这是<h1>首页页面</h1>'})
+			        //.when('/computer',{template:'这是电脑分类页面'})
+			        .when('/computer',{templateUrl:'computer.html'})
+			        .when('/money',{template:'这是财务页面'})
+			        //如果都匹配不上，则跳转到一个页面
+			        .otherwise({redirectTo:'/'});
+			}]);
+		</script>
+	</body>
+</html>

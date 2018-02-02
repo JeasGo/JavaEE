@@ -11,15 +11,63 @@
 		<script  type="text/javascript" src="js/jquery.min.js"></script>
 		<script  type="text/javascript" src="js/bootstrap.min.js"></script>
 		<script  type="text/javascript" src="js/self/effect.js"></script>
+		<script src="js/angular.min.js"></script>
+		<script src="js/angular-route.min.js"></script>
+		<script src="js/validation/jquery.validate.min.js"></script>
+		<script src="js/validation/messages_zh.min.js"></script>
 		
-		<!--angularjs-->
-		<script src="js/angular.min.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			$().ready(function(){
+				$("#signupForm").validate({
+					rules:{
+						telephone:"required",
+						password:{
+							required :true,
+							minlength:6
+						},
+						checkcode:"required",
+						confirm_password:{
+							required: true,
+       						minlength: 6,
+       						equalTo: "#password"
+						},
+						email:{
+       						required: true,
+      						email: true
+      					},
+						 agree: "required"							
+					},
+					messages:{
+					 	telephone:"请输入您的手机号",
+					 	checkcode:"请输入验证码",
+					    password: {
+					    	required: "请输入密码",
+					    	minlength: "密码长度不能小于6个字母"
+					   	},
+			     		confirm_password: {
+			        		required: "请输入确认密码",
+			        		minlength: "密码长度不能小于6个字母",
+			        		equalTo: "两次密码输入不一致"
+			      		},
+			     		email: "请输入一个正确的邮箱",
+			      		agree: "请先阅读并且同意协议",
 
+			   		}
+				})
+			});
+			
+		</script>
+		<style>
+			.error{
+				color:red;
+		}</style>
 		<!--[if IE]>
     <script  type="text/javascript" src="js/html5.js"></script>
     <script  type="text/javascript" src="js/respond.min.js"></script>
     <![endif]-->
 	</head>
+	
+	
 	<body>
 		<!--head-->
 		<div class="loginnav">
@@ -41,19 +89,19 @@
 								
 			</div>
 			
-            <div class="signup" ng-app="myApp" ng-controller="myCtrl">
+            <div class="signup" ng-app="signupApp" ng-controller="signupCtrl">
               <div class="col-md-9 signupbox">
-				<form id="signupForm" class="form col-md-6" action="customer_regist.action" method="post">
+				<form id="signupForm" action="customer_regist.action" method="post" class="form col-md-6">
 					<div class=" form-group">
 							<label for="inputaccount" class="col-sm-3 control-label"><b>*</b>手机号</label>
 							<div class="col-sm-8">
-								<input type="text" class="form-control" name="mobilePhone" ng-model="mobilePhone" id="inputaccount" placeholder="请输入手机号">
+								<input name="telephone"required ng-model="telephone" type="text" class="form-control"  placeholder="请输入手机号">
 							</div>
 					</div>
 					<div class="form-group">
 							<label for="inputaccount" class="col-sm-3 control-label"><b>*</b>验证码</label>
 							<div class="col-sm-5">
-								<input type="text" class="form-control" name="checkcode" id="inputaccount" placeholder="请输入验证码">
+								<input type="text" name="checkcode" class="form-control"  placeholder="请输入验证码">
 							</div>
 							<div class="col-sm-3 song">
 								<button type="button" class="btn btn-default" ng-bind="checkcodemsg" ng-click="getCheckCode()">获取验证码</button>
@@ -63,7 +111,7 @@
 					<div class="form-group">
 							<label for="inputaccount" class="col-sm-3 control-label"><b>*</b>密码</label>
 							<div class="col-sm-8">
-								<input type="password" name="password" class="form-control" id="inputaccount" placeholder="6-16位数字或英文字母">
+								<input name="password" type="password" class="form-control" id="password" placeholder="6-16位数字或英文字母">
 								<p class="text-right grey">安全强度：*****</p>
 							</div>
 							
@@ -72,28 +120,30 @@
 					<div class="form-group">
 							<label for="inputaccount" class="col-sm-3 control-label"><b>*</b>确认密码</label>
 							<div class="col-sm-8">
-								<input type="password" name="repassword" class="form-control" id="inputaccount" placeholder="6-16位数字或英文字母">
+								<input type="password" name="confirm_password" class="form-control"  placeholder="6-16位数字或英文字母">
 							</div>
 					</div>
 					<div class="form-group">
 							<label for="inputaccount" class="col-sm-3 control-label"><b>*</b>绑定邮箱</label>
 							<div class="col-sm-8">
-								<input type="email" name="email" class="form-control" id="inputemail" placeholder="请输入需要绑定的邮箱">
+								<input name="email" type="email" class="form-control" id="inputemail" placeholder="请输入需要绑定的邮箱">
 							</div>
 					</div>
 					<div class="form-group">							
 							<div class="col-sm-offset-3 col-sm-8 song">
 								<div class="checkbox">
-    <label>
-      <input type="checkbox"> 查看并同意<a href="#"> 《速运快递服务协议》</a>
-    </label>
-  </div>
-								
+    								<label>
+     					 				<input type="checkbox" name="agree" id="agree"> 查看并同意<a href="#"> 《速运快递服务协议》</a>
+     					 				<br />
+     					 				<label id="agree-error" class="error" for="agree" style="padding:0;"></label>
+    								</label>
+    								
+  								</div>
 							</div>
 					</div>
 					<div class="form-group signbtn">							
 							<div class="col-sm-offset-3 col-sm-8 song">
-								<a class="btn btn-danger" href="javascript:$('#signupForm').submit();">注册</a>
+								<a class="btn btn-danger"  href="javascript:$('#signupForm').submit()">注册</a>
 							</div>
 					</div>
 					
@@ -132,76 +182,88 @@
 		</footer>
 		
 		<script type="text/javascript">
-			angular.module("myApp",[])
-			.controller("myCtrl",["$scope","$http",function ($scope,$http) {
-				//初始化按钮值
+		//初始化angularjs的模块
+			angular.module("signupApp",[])
+			.controller("signupCtrl",["$scope","$http",function ($scope,$http) {
+				//初始化变量
 				$scope.checkcodemsg="获取验证码";
 				
-				//做60秒倒计时的效果
-				var flag=true;//是否能点击按钮的标志
-				var second=10;//默认的秒数
-				var interval=undefined;//定时器
-				
-				//自定义发送验证码的方法
+				//定义一些变量
+				//倒计时的最大时间,默认60
+				var second=5;
+				//定时器对象
+				var interval=null;
+				//是否允许发送验证码的标识
+				var enableFlag=true;
+
+				//定义获取验证码的方法
 				$scope.getCheckCode=function(){
-					//手机号码
-					//alert($scope.mobilePhone);
-					//判断手机号码
-					var regex=/^1[34578]\d{9}$/;
-					if(!regex.test($scope.mobilePhone)){
+					//判断是否允许点击获取验证码的按钮
+					if(!enableFlag){
+						//不允许点击
+						return;
+					}
+					
+					//alert(1);
+					//判断用户是否输入了手机号码，
+					if(!/^1[345789]\d{9}$/.test($scope.telephone)){
+						//如果没输入正确的号码
 						alert("请输入正确的手机号码！");
 						return;
 					}
 					
-					
-					if(flag){
-						
-						//发送短信的真正代码。。
-						//调用java代码url：action
-						$http({
-						    method: 'POST',
-						    url: 'customer_sendCheckcode.action',
-						    params:{"mobilePhone":$scope.mobilePhone}
-						}).then(function successCallback(response) {
-						        // 请求成功执行代码
-//						        alert("发送成功");
-						    }, function errorCallback(response) {
-						        // 请求失败执行代码
-						         alert("发送失败，请等待60秒重试或请联系管理员");
-						});
-						
-						
-						//如果能点击按钮
-						//首先要置为false
-						flag=false;
-						//alert(0);
-						//不能点击（倒计时的时候）
-						//倒计时
+					//发送短信了。。。
+					//alert("发送短信开始了。。。");
+					$http({
+						method:'POST',
+						url:'customer_sendCheckcode.action',
+						params:{
+							"telephone":$scope.telephone,	
+						}
+					}).then(function successCallback(response) {
+				        // 请求成功执行代码
+				        //alert("验证码发送成功！");
+				        
+				        //禁用按钮点击
+						enableFlag=false;
+						//实现60秒倒计时效果
 						interval=window.setInterval(function(){
-							//将秒数递减
-							second--;
-							//要将按钮的文字变成秒数
-							$scope.checkcodemsg=second+"秒";
-							$scope.$digest();//同步vm和v
-							//alert(second);
-							
-							
-							if(second===0){
-								//停止计时器
-								window.clearInterval(interval);//停止计时器
-								interval=undefined;//释放资源
-								flag=true;//标志
-								$scope.checkcodemsg="获取验证码";
-								$scope.$digest();//同步vm和v
-								second=10;//重置秒数
+							if(second==0){
+								//停止定时器
+								window.clearInterval(interval);
 								
+								//销毁定时器释放资源
+								interval=null;
+								//将按钮文字重新改成原始字
+								$scope.checkcodemsg="获取验证码";
+								//强制更新视图
+								$scope.$digest();
+								//重置秒
+								second=5;
+								
+								//启动按钮点击
+								//禁用按钮点击
+								enableFlag=true;
+							}else{
+								
+								//给按钮重新赋值
+								$scope.checkcodemsg=second+"秒";
+								//强制更新视图
+								$scope.$digest();
+								//秒递减
+								second--;
+								enableFlag=false;
 							}
 							
 						},1000);
-						
-					}
-				};
-			}]);
-		</script>
+				        
+				    }, function errorCallback(response) {
+				        // 请求失败执行代码
+				         alert("验证码发送失败！请联系管理员！");
+					});
+				}
+			}]);	
+	</script>
+
 	</body>
 </html>

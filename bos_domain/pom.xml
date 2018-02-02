@@ -4,9 +4,10 @@
     <groupId>cn.itcast.maven</groupId>
     <artifactId>common_parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
+  
+  <groupId>cn.jeas.maven</groupId>
   <artifactId>bos_domain</artifactId>
   <name>bos_domain</name>
-  <description>bos的领域项目</description>
+  <description>bos项目的实体类</description>
 </project>

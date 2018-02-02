@@ -25,26 +25,30 @@
 						key : {
 							title : "t"
 						},
-						//简单数据
 						simpleData : {
 							enable : true
 						}
 					},
-					//菜单上是否有复选框
 					check : {
 						enable : true,
 					}
 				};
-				
+				$.post("../../permission_list.action",function(data){
+					$(data).each(function(){
+						var checkbox=$("<input type='checkbox' name='permissionId' value='"+this.id+"'/>");
+						//将复选框添加到td中
+						$("#permissionTd").append(checkbox);
+						//填入显示的值
+						$("#permissionTd").append(this.name);
+
+					});
+				});
 				$.ajax({
-					//url : '../../data/menu.json',
 					url : '../../menu_list.action',
 					type : 'POST',
 					dataType : 'text',
 					success : function(data) {
-						//js的将json字符串转成json对象
 						var zNodes = eval("(" + data + ")");
-						//初始化ztree
 						$.fn.zTree.init($("#menuTree"), setting, zNodes);
 					},
 					error : function(msg) {
@@ -56,43 +60,30 @@
 				
 				// 点击保存
 				$('#save').click(function(){
+					//location.href='role.html';
 					if($("#roleForm").form("validate")){
-						//获取树的节点ids
+						//获取选中的节点的ids放入隐藏域
+						//1）获取选中的节点
 						var treeObj = $.fn.zTree.getZTreeObj("menuTree");
-						var nodes = treeObj.getCheckedNodes(true);//json数组
-						//重新组装
+						var nodes = treeObj.getCheckedNodes(true);	//选中的节点集合json数组
+						
 						var menuIdArray=new Array();
+						//循环数组获取ids
 						$(nodes).each(function(){
 							menuIdArray.push(this.id);
 						});
+						//数组转ids
 						var menuIds=menuIdArray.join();
-						
-						//给隐藏域赋值
+						//放入隐藏域
 						$("#menuIds").val(menuIds);
-						
 						
 						//提交表单
 						$("#roleForm").submit();
 					}
-					
+
 				});
-				// 点击返回
 				$('#back').click(function(){
 					location.href='role.html';
-				});
-				
-				//初始化功能权限复选框
-				$.post("../../permission_list.action",function(data){
-					//data:json数组
-					$(data).each(function(){
-						//构建一个复选元素
-						//jquery只能将一个dom对象转换为jquery对象，剩下的抛弃掉。
-						//解决:分开添加，或将多个元素用一个标签span包起来就行了（课后）
-						var checkbox=$("<input type='checkbox' name='permissionIds' value='"+this.id+"'/>");
-						//添加到td中
-						$("#permissionTd").append(checkbox);
-						$("#permissionTd").append(this.name);
-					});
 				});
 				
 			});
@@ -103,11 +94,11 @@
 		<div region="north" style="height:31px;overflow:hidden;" split="false" border="false">
 			<div class="datagrid-toolbar">
 				<a id="save" icon="icon-save" href="#" class="easyui-linkbutton" plain="true">保存</a>
-				<a id="back" icon="icon-undo" href="#" class="easyui-linkbutton" plain="true">返回</a>
+				<a id="back" icon="icon-undo" href="#" class="easyui-linkbutton" plain="true">取消</a>
 			</div>
 		</div>
 		<div region="center" style="overflow:auto;padding:5px;" border="false">
-			<form id="roleForm" action="../../role_add.action" method="post">
+			<form id="roleForm" method="post" action="../../role_add.action">
 				<table class="table-edit" width="80%" align="center">
 					<tr class="title">
 						<td colspan="2">角色信息</td>
@@ -142,8 +133,7 @@
 						<td>菜单授权</td>
 						<td>
 							<ul id="menuTree" class="ztree"></ul>
-							<!-- 隐藏域，临时存放树选中的节点的ids，为了提交 -->
-							<input id="menuIds" name="menuIds" type="hidden"/>
+							<input type="hidden" name="menuIds" id = "menuIds" >
 						</td>
 					</tr>
 				</table>

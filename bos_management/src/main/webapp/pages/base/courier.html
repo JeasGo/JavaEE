@@ -18,71 +18,37 @@
 		<script type="text/javascript">
 			function doAdd(){
 				$('#addWindow').window("open");
+				$("#save").click(function(){
+					$("#courierForm").submit();
+				});
 			}
-			
 			function doEdit(){
-				//alert("修改...");
-				var rows=$("#grid").datagrid("getSelections");
-				//判断
-				if(rows.length!=1){
-					$.messager.alert("提示","请只能选择一条记录","info");
-					return;
-				}
-				//手动设置收派标准
-				$("#standard_id").combobox('setValue', rows[0].standard.id); 
-				//$("#standard_id").combobox('select', rows[0].standard.id); 
-				
-				$("#courierForm").form("load",rows[0]);
-				$("#addWindow").window("open");
+				alert("修改...");
 			}
 			
-			//作废
 			function doDelete(){
 				//alert("删除...");
-				//1）要获取选中的行
-				var rows =$("#grid").datagrid("getSelections");
-				//判断
-				if(rows.length===0){
-					$.messager.alert("提示","请至少选择一个快递员！","info");
+				var rows = $("#grid").datagrid("getSelections");
+				if (rows.length == 0) {
+					$.messager.alert("提示","请至少选择一个快递员","info");
 					return;
 				}
-				
-				//2)获取选中的ids(将id用逗号分割)
-				//var ids;
-				
-				//弄一个空数组，临时存放id
-				var idArray=new Array();
-				
-				//循环rows
+				var idArray = new Array();
 				$(rows).each(function(){
 					idArray.push(this.id);
 				});
-				
-				//将数组转换为字符串，英文逗号分割
-				var ids=idArray.join();
-				
-				
-				//3)异步删除
+				//将id数组转换为字符串  ,然后用, 分隔
+				var ids = idArray.join();
+				//第四步:异步请求删除
 				$.post("../../courier_deleteBatch.action",{"ids":ids},function(data){
-					//data是结果:{"result":true}
 					if(data.result){
-						//成功
-						$.messager.alert("恭喜","作废取派员成功","info");
-					}else{
-						//失败
-						$.messager.alert("失败","作废取派员失败","error");
+						$.messager.alert("成功","快递员作废成功","info");
 					}
-					
-					//刷新列表，停留在当前页
-					//load会重新加载业务条件（如果不写后面的参数，会将业务条件参数置空），并抛弃分页条件
-					//reload也可重新加载业务条件（如果不写后面的参数，会保留原来的业务条件），但会保留分页条件
+					if(!data.result){
+						$.messager.alert("失败","快递员作废失败","error");
+					}
 					$("#grid").datagrid("reload");
-					//取消选择的行
-					$("#grid").datagrid("clearSelections");
-					
-					
 				});
-				
 			}
 			
 			function doRestore(){
@@ -149,7 +115,6 @@
 				title : '取派标准',
 				width : 120,
 				align : 'center',
-				
 				formatter : function(data,row, index){
 					if(row.standard != null){
 						return row.standard.name;
@@ -171,16 +136,12 @@
 				title : '是否作废',
 				width : 80,
 				align : 'center',
-				//参数1：该字段根据key取到的值
-				//参数2：该字段所在行的一行json对象
-				//参数3：该字段值所在行的索引
 				formatter : function(data,row, index){
 					if(data=="0"){
 						return "正常使用"
 					}else{
 						return "已作废";
 					}
-					//return "<a href='#'>我是链接</a>"
 				}
 			}, {
 				field : 'vehicleType',
@@ -205,20 +166,18 @@
 					border : false,
 					rownumbers : true,
 					striped : true,
-					pageList: [2,20,200],
-					//分页参数
+					pageList: [3,10,30],
+					//分页参数是否发送
 					pagination : true,
 					toolbar : toolbar,
-					//url : "../../data/courier.json",
 					url : "../../courier_listPage.action",
 					idField : 'id',
 					columns : columns,
-					onDblClickRow : doDblClickRow,
-					//额外参数
-					queryParams: {  		
-					    name: 'easyui',  		
-					    subject: 'datagrid'  	
-					 } 
+					onDblClickRow : doDblClickRow
+					/* queryParams : {
+						name :'easyui',
+						subject: 'datagrid'
+					} */
 				});
 				
 				// 添加取派员窗口
@@ -231,7 +190,6 @@
 			        height: 400,
 			        resizable:false
 			    });
-				
 				//保存按钮
 				$("#save").click(function(){
 					//表单校验
@@ -241,9 +199,8 @@
 					}
 				});
 				
-				//查询列表
+			//查询列表
 				$("#searchBtn").click(function(){
-					
 					//获取表单的值的json对象
 					//两种方式
 					//1)手动取值手动拼接json（麻烦）
@@ -257,25 +214,22 @@
 					//关闭查询窗口
 					$("#searchWindow").window("close");
 				});
-				
 			});
-		
-			function doDblClickRow(){
-				alert("双击表格数据...");
-			}
-			
 			//弹出查询框
 			function doSearch(){
 				
-				//模式窗口
+				//模态窗口
 				$("#searchWindow").window({
-					modal:true
+					modal:true,
+					draggable :false
 				});
 				//弹出window
-				$("#searchWindow").window("open");
+				$("#searchWindow").window("open").window("center");
 				
 			}
-			
+			function doDblClickRow(){
+				alert("双击表格数据...");
+			}
 			//将表单序列化为json对象
 			$.fn.serializeJson=function(){  
 	            var serializeObj={};  
@@ -294,7 +248,6 @@
 	            });  
 	            return serializeObj;  
 	        }; 
-			
 		</script>
 	</head>
 
@@ -310,7 +263,7 @@
 			</div>
 
 			<div region="center" style="overflow:auto;padding:5px;" border="false">
-				<form id="courierForm" action="../../courier_add.action" method="post">
+				<form id = "courierForm" action="../../courier_add.action" method="post">
 					<table class="table-edit" width="80%" align="center">
 						<tr class="title">
 							<td colspan="4">收派员信息</td>
@@ -352,7 +305,7 @@
 							</td>
 							<td>取派标准</td>
 							<td>
-								<input id="standard_id" type="text" name="standard.id" 
+								<input type="text" name="standard.id" 
 										class="easyui-combobox" 
 										data-options="required:true,valueField:'id',textField:'name',
 											url:'../../standard_list.action'"/>
@@ -376,7 +329,7 @@
 		<!-- 查询快递员-->
 		<div class="easyui-window" title="查询快递员窗口" closed="true" id="searchWindow" collapsible="false" minimizable="false" maximizable="false" style="width: 400px; top:40px;left:200px">
 			<div style="overflow:auto;padding:5px;" border="false">
-				<form id="searchForm">
+				<form id="searchForm" >
 					<table class="table-edit" width="80%" align="center">
 						<tr class="title">
 							<td colspan="2">查询条件</td>
@@ -390,7 +343,11 @@
 						<tr>
 							<td>收派标准</td>
 							<td>
-								<input type="text" name="standard.name" />
+								<!-- <input type="text" name="standard.name" /> -->
+								<input type="text" name="standard.id" 
+										class="easyui-combobox" 
+										data-options="required:false,valueField:'id',textField:'name',
+											url:'../../standard_list.action'"/>
 							</td>
 						</tr>
 						<tr>

@@ -17,27 +17,24 @@
 		<script type="text/javascript">
 			$(function(){
 				$("body").css({visibility:"visible"});
-				//保存
 				$('#save').click(function(){
 					if($('#form').form("validate")){
 						$('#form').submit();
 					}
-					
 				});
-				//返回
-				$('#back').click(function(){
-					location.href="../../pages/system/userlist.html";
-				});
-				
-				
-				//初始化角色选择
 				$.post("../../role_list.action",function(data){
+					//data:json数组
 					$(data).each(function(){
-						var checkbox=$("<input type='checkbox' name='roleIds' value='"+this.id+"'/>");
+						//构建复选框
+						//jquery默认情况下只能将一个dom对象转换为jq对象，如果转换多个对象，则默认会取第一个对象转换，其他对象抛弃掉
+						//解决方案：让多个变成一个即可
+						var checkbox=$("<span><input type='checkbox' name='roleIds' value='"+this.id+"'/>"+this.name+"</span>");
+						
+						//添加到td中
 						$("#roleTd").append(checkbox);
-						$("#roleTd").append(this.name);
 					});
 				});
+
 			});
 		</script>
 	</head>
@@ -46,11 +43,10 @@
 		<div region="north" style="height:31px;overflow:hidden;" split="false" border="false">
 			<div class="datagrid-toolbar">
 				<a id="save" icon="icon-save" href="#" class="easyui-linkbutton" plain="true">保存</a>
-				<a id="back" icon="icon-undo" href="#" class="easyui-linkbutton" plain="true">返回</a>
 			</div>
 		</div>
 		<div region="center" style="overflow:auto;padding:5px;" border="false">
-			<form id="form" action="../../user_add.action" method="post">
+			<form id="form" method="post" action="../../user_add.action">
 				<table class="table-edit" width="95%" align="center">
 					<tr class="title">
 						<td colspan="4">基本信息</td>
@@ -81,7 +77,7 @@
 						</td>
 						<td>生日:</td>
 						<td>
-							<input type="text" name="birthday" id="birthday" class="easyui-datebox" />
+							<input type="text" data-options="editable:false" name="birthday" id="birthday" class="easyui-datebox" />
 						</td>
 					</tr>
 					<tr>
@@ -122,7 +118,7 @@
 					<tr>
 						<td>备注:</td>
 						<td colspan="3">
-							<textarea name="remark" style="width:80%"></textarea>
+							<textarea style="width:80%"></textarea>
 						</td>
 					</tr>
 				</table>

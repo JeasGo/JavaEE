@@ -47,7 +47,7 @@
 				</ul>
 				<div class="tab-content">
 					<div role="tabpanel" class="tab-pane fade in active" id="one">
-						<form id="orderForm" action="order_add.action" class="form-horizontal" method="post">
+						<form id="orderForm" class="form-horizontal" method="post">
 						<!--寄件人信息 -->
 						<div class="model">
 							<div class="areatitle">
@@ -160,8 +160,10 @@
 											<label for="sendAddress" class="col-sm-3 control-label"><b>*</b>详细地址：</label>
 
 											<div class="col-sm-8">
+												<!--地址输入框-->
 												<input id="sendAddress" name="sendAddress" type="text" class="form-control" placeholder="街道详细（精确到门牌号） " required="required">
-												<div id="sendAddressSearchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+												<!--下来列表-->
+												<div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
 												<p class="error">
 													请填写正确的信息
 												</p>
@@ -281,9 +283,7 @@
 											<label for="inputPassword" class="col-sm-3 control-label"><b>*</b>详细地址：</label>
 
 											<div class="col-sm-8">
-												<input id="recAddress" name="recAddress" type="text" class="form-control" placeholder="街道详细（精确到门牌号） " required="required">
-												<div id="recAddressSearchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
-												
+												<input name="recAddress" type="text" class="form-control" placeholder="街道详细（精确到门牌号） " required="required">
 											</div>
 										</div>
 									</div>
@@ -556,81 +556,77 @@
 	<script src="js/self/controllers.js"></script>
 	<script src="js/self/main.js"></script>
 	<script src="js/self/effect.js"></script>
+	<!--<script type="text/javascript" src="https://webapi.amap.com/demos/js/liteToolbar.js"></script>-->
 	<script>
 		function Click() {
 			$('a[rel*=downloadr]').downloadr()
 		}
-		
-		//抽取公用方法
-		//参数1：地址的输入框的id
-		//参数2：下拉提示组件的id
-		//参数3：区域city-picker的id的值
-		function setAddressAndRegionInfo(addressId,searchResultPanelId,areaInfoId){
-			// 百度地图API功能
-			function G(id) {
-				return document.getElementById(id);
-			}
-			var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
-				{"input" : addressId
-			});
-		
-			ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
-			var str = "";
-				var _value = e.fromitem.value;
-				var value = "";
-				if (e.fromitem.index > -1) {
-					value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-				}    
-				str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
-				
-				value = "";
-				if (e.toitem.index > -1) {
-					_value = e.toitem.value;
-					value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-				}    
-				str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
-				G(searchResultPanelId).innerHTML = str;
-			});
-		
-			var myValue;
-			ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
-			var _value = e.item.value;
-				myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-				G(searchResultPanelId).innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
-				/*$.get("http://api.map.baidu.com/cloudgc/v1?address=北京市海淀区营业网点&ak=Kn5cFU5D6058BNCXCtLlWjh8RRuAUelK",function(data){
-					console(data);
-				});*/
-				//跨域的get请求
-				/*$.getJSON("http://api.map.baidu.com/cloudgc/v1?address=北京市海淀区营业网点&ak=Kn5cFU5D6058BNCXCtLlWjh8RRuAUelK&callback=?",function(data){
-					console(data);
-				});*/
-				$.getJSON("http://api.map.baidu.com/cloudgc/v1?callback=?",{
-					address:myValue,
-					ak:"Kn5cFU5D6058BNCXCtLlWjh8RRuAUelK"
-				},function(data){
-					//将省市区赋值给city-picker
-					//清空重置
-					$('#'+areaInfoId).citypicker('reset');
-					//销毁组件
-					$('#'+areaInfoId).citypicker('destroy');
-					//重新初始化
-					$('#'+areaInfoId).citypicker({
-					  province: data.result[0].address_components.province,
+		/*AMap.plugin('AMap.Autocomplete',function(){//回调函数
+	    //实例化Autocomplete
+	    var autoOptions = {
+	        city: "", //城市，默认全国
+	        input:"sendAddress"//使用联想输入的input的id
+	    };
+	    autocomplete= new AMap.Autocomplete(autoOptions);
+	    //TODO: 使用autocomplete对象调用相关功能
+		})*/
+
+		//给寄件人地址绑定输入的自动补全功能（基于百度地图api）
+		// 百度地图API功能
+		function G(id) {
+			return document.getElementById(id);
+		}
+	 	//建立一个自动完成的对象
+		var ac = new BMap.Autocomplete(   
+			{"input" : "sendAddress"//input输入框的id
+		});
+	
+		//鼠标放在下拉列表上的事件
+		ac.addEventListener("onhighlight", function(e) {  
+		var str = "";
+			var _value = e.fromitem.value;
+			var value = "";
+			if (e.fromitem.index > -1) {
+				value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+			}    
+			str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+			
+			value = "";
+			if (e.toitem.index > -1) {
+				_value = e.toitem.value;
+				value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+			}    
+			str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+			G("searchResultPanel").innerHTML = str;
+		});
+	
+		var myValue;
+		//鼠标点击下拉列表后的事件
+		ac.addEventListener("onconfirm", function(e) {    
+		var _value = e.item.value;
+			myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+			//下拉列表填充
+			G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+			
+			//使用百度的云地理编码，进行：解析结构化的地址构成
+			$.getJSON("http://api.map.baidu.com/cloudgc/v1?callback=?",{
+				"address":myValue,
+				"ak":"Kn5cFU5D6058BNCXCtLlWjh8RRuAUelK"
+			},function(data){
+				//alert(data.result[0].address_components.province);
+				//先重置
+				$("#sendAreaInfo").citypicker('reset');
+				//在销毁
+				$("#sendAreaInfo").citypicker('destroy');
+				//再重新初始化赋值
+				$("#sendAreaInfo").citypicker({
+					province: data.result[0].address_components.province,
 					  city: data.result[0].address_components.city,
 					  district: data.result[0].address_components.district
-					});
 				});
 			});
 			
-		}
-		
-		//寄件人相关
-		setAddressAndRegionInfo("sendAddress","sendAddressSearchResultPanel","sendAreaInfo");
-		
-		//收件人相关
-		setAddressAndRegionInfo("recAddress","recAddressSearchResultPanel","recAreaInfo");
-		
 			
-	</script>
+		});
 	
-</html>
+	</script>

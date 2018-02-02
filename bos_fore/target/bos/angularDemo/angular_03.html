@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	
+	<script src="../js/angular.min.js"></script>	
+	<body>
+		<div ng-app="myApp" ng-controller="myCtrl">
+			<input ng-model="username" />
+			<input type="button" value="清空数据1" ng-click="clearMsg()"/>
+			<input type="button" value="清空数据2" ng-click="username=''"/>
+			
+			<br />
+			<div>hello {{username}}</div>
+			
+		</div>
+		<script>
+			var myApp = angular.module("myApp",[]);
+			
+			myApp.controller("myCtrl",["$scope",function($scope){
+				$scope.clearMsg = function(){
+					$scope.username = "";
+				};
+			}]);
+		</script>
+		
+	</body>
+</html>

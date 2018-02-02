@@ -1,0 +1,16 @@
+cn\jeas\bos\domain\base\SubArea.class
+cn\jeas\bos\domain\base\WorkBill.class
+cn\jeas\bos\domain\base\TakeTime.class
+cn\jeas\bos\domain\base\Courier.class
+cn\jeas\bos\utils\Constants.class
+cn\jeas\bos\domain\base\Standard.class
+cn\jeas\bos\domain\base\Archive.class
+cn\jeas\bos\domain\base\Area.class
+cn\jeas\bos\domain\base\SubArchive.class
+cn\jeas\bos\action\base\common\BaseAction.class
+cn\jeas\bos\domain\base\WayBill.class
+cn\jeas\bos\utils\MailUtils.class
+cn\jeas\bos\utils\SMSUtils.class
+cn\jeas\bos\domain\base\Order.class
+cn\jeas\bos\domain\base\Vehicle.class
+cn\jeas\bos\domain\base\FixedArea.class
